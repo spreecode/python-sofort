@@ -13,7 +13,7 @@ else:
 class TestSofort(unittest.TestCase):
     def setUp(self):
         config = ConfigParser.ConfigParser()
-        config.readfp(open('config.spree.ini'))
+        config.readfp(open('config.example.ini'))
 
         username = config.get('sofort', 'user_id')
         password = config.get('sofort', 'api_key')

@@ -77,7 +77,8 @@ class Client(object):
             'number': number
         }
         params.update(extra_params)
-        sxml.transaction_request_by_params(params)
+        sofort.xml.transaction_request_by_params(params)
+        raise NotImplementedError()
 
     def _request(self, data, config=None):
         if config is None:
