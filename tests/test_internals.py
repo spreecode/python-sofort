@@ -1,6 +1,8 @@
+# -*- coding: utf-8 -*-
+
 import unittest
 
-from sofort.internals import Config
+from sofort.internals import Config, strip_reason
 
 class TestSofortConfig(unittest.TestCase):
     def test_init(self):
@@ -39,3 +41,8 @@ class TestSofortConfig(unittest.TestCase):
         self.assertEqual(12.4, c.weight)
         self.assertEqual('medieval', c.era)
         self.assertEqual('stripes', c.white)
+
+    def test_prepare_reason(self):
+        self.assertEqual(u'Invoice 001', strip_reason(u'Invoice (:#001:)'))
+        self.assertEqual(u'aezAEZ091+-.,', strip_reason(u'aezAEZ091+-.,'))
+        self.assertEqual(u'üöäÄÜÖß', strip_reason(u'|üöäÄÜÖß|'))

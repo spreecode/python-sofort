@@ -51,6 +51,10 @@ class Client(object):
             if not params.has(field):
                 raise ValueError('Mandatory field "{}" is not specified'.format(field))
 
+        params.reasons = [sofort.internals.strip_reason(reason)
+                                for reason
+                                in params.reasons]
+
         return self._request(sofort.xml.multipay(params), params)
 
     def details(self, transaction_ids):
