@@ -16,9 +16,13 @@ class RequestError(Exception):
     def __init__(self, error_data):
         self.id = error_data.code
         self.message = error_data.message
+        self.field = getattr(error_data, 'field', None)
 
     def __repr__(self):
         return self.code
 
     def __str__(self):
-        return str(self.message)
+        result = str(self.message)
+        if not self.field is None:
+            result = '{}: {}'.format(self.field, result)
+        return result
