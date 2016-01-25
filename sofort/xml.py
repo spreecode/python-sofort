@@ -2,7 +2,8 @@ import datetime
 import collections
 from lxml import etree
 
-def multipay(config):
+def multipay(params):
+    config = params.clone()
     root = etree.Element('multipay')
 
     prime_mandatory = ['project_id', 'amount', 'currency_code',
@@ -69,14 +70,15 @@ def transaction_request_by_params(params):
         etree.SubElement(root, name).text = __serialize(value)
     return etree.tostring(root)
 
-def __compact_notification_addresses(addresses):
+def __compact_notification_addresses(addresses_):
     result = {}
+    addresses = dict(addresses_)
     default = addresses.pop('default', None)
 
     for key, value in __reverse_group_dict(addresses).items():
         result[','.join(value)] = key
 
-    if not default is None:
+    if default:
         result['default'] = default
 
     return result
