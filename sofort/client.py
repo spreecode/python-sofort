@@ -58,7 +58,7 @@ class Client(object):
         return self._request(sofort.xml.multipay(params), params)
 
     def details(self, transaction_ids):
-        if isinstance(transaction_ids, str):
+        if isinstance(transaction_ids, basestring):
             transaction_ids = [transaction_ids]
         return self._request(sofort.xml.transaction_request_by_ids(transaction_ids))
 
