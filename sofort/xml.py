@@ -2,8 +2,7 @@ import datetime
 import collections
 from lxml import etree
 
-def multipay(params):
-    config = params.clone()
+def multipay(config):
     root = etree.Element('multipay')
 
     prime_mandatory = ['project_id', 'amount', 'currency_code',
