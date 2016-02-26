@@ -40,12 +40,8 @@ setup(
 
     # The project's main homepage.
     url='',
-
-    # Author details
     author='Leonid Suprun',
     author_email='mr.slay@gmail.com',
-
-    # Choose your license
     license='MIT',
 
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
@@ -86,7 +82,7 @@ setup(
     # requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
     # install_requires=['peppercorn'],
-    install_requires=['requests', 'lxml'],
+    install_requires=['requests', 'lxml', 'xmltodict'],
 
     # List additional groups of dependencies here (e.g. development
     # dependencies). You can install these using the following syntax,
