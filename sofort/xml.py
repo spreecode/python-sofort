@@ -55,6 +55,7 @@ def multipay(config):
 
     return etree.tostring(root)
 
+
 def transaction_request_by_ids(ids):
     root = etree.Element('transaction_request')
     root.set('version', '2')
@@ -62,12 +63,14 @@ def transaction_request_by_ids(ids):
         etree.SubElement(root, 'transaction').text = id
     return etree.tostring(root)
 
+
 def transaction_request_by_params(params):
     root = etree.Element('transaction_request')
     root.set('version', '2')
     for name, value in params.items():
         etree.SubElement(root, name).text = __serialize(value)
     return etree.tostring(root)
+
 
 def __compact_notification_addresses(addresses_):
     """
@@ -102,6 +105,7 @@ def __compact_notification_addresses(addresses_):
 
     return result
 
+
 def __reverse_group_dict(dictionary):
     result = collections.defaultdict(list)
 
@@ -109,6 +113,7 @@ def __reverse_group_dict(dictionary):
         result[value].append(key)
 
     return result
+
 
 def __serialize(value):
     if isinstance(value, bool):

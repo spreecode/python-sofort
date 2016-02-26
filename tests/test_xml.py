@@ -7,6 +7,7 @@ from lxml.doctestcompare import LXMLOutputChecker
 import sofort.xml
 import sofort.internals
 
+
 class XmlTest(unittest.TestCase):
     """
     http://stackoverflow.com/questions/321795/comparing-xml-in-a-unit-test-in-python
@@ -16,6 +17,7 @@ class XmlTest(unittest.TestCase):
         if not checker.check_output(want, got, 0):
             message = checker.output_difference(Example("", want), got, 0)
             raise AssertionError(message)
+
 
 class TestSofortXML(XmlTest):
     def test_multipay(self):

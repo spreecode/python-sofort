@@ -1,6 +1,7 @@
 class UnauthorizedError(Exception):
     pass
 
+
 class RequestErrors(Exception):
     def __init__(self, response):
         super(RequestErrors, self).__init__('Request errors')
@@ -11,6 +12,7 @@ class RequestErrors(Exception):
 
     def __str__(self):
         return '; '.join([str(e) for e in self.errors])
+
 
 class RequestError(Exception):
     def __init__(self, error_data):

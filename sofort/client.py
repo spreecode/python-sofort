@@ -13,6 +13,7 @@ TRANSACTION_ID = '-TRANSACTION-'
 
 TRANSACTION_HISTORY_LIMIT = datetime.timedelta(days=30)
 
+
 class Client(object):
     def __init__(self, user_id, api_key, project_id, **kwargs):
         self.config = sofort.internals.Config(
