@@ -3,6 +3,7 @@
 import re
 import copy
 
+
 class Config(object):
     def __init__(self, **params):
         self.update(params)
@@ -16,6 +17,7 @@ class Config(object):
 
     def clone(self):
         return Config(**copy.deepcopy(self.__dict__))
+
 
 def strip_reason(reason):
     """

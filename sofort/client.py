@@ -101,10 +101,10 @@ class Client(object):
                           auth=(config.user_id, config.api_key),
                           data=data)
 
-        if r.status_code == 401:
-            raise sofort.exceptions.UnauthorizedError()
-        elif r.status_code == 200:
+        if r.status_code == 200:
             return r.text
+        elif r.status_code == 401:
+            raise sofort.exceptions.UnauthorizedError()
         else:
             raise NotImplementedError(
                 'Unknown response status: {}'.format(r.status_code)
