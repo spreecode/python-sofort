@@ -1,7 +1,7 @@
 import unittest
-import logging
-import datetime
-import ConfigParser
+import warnings
+
+from ConfigParser import ConfigParser
 
 import sofort
 
@@ -12,14 +12,23 @@ else:
 
 class TestSofort(unittest.TestCase):
     def setUp(self):
-        config = ConfigParser.ConfigParser()
+        config = ConfigParser()
         config.readfp(open('config.example.ini'))
 
         username = config.get('sofort', 'user_id')
         password = config.get('sofort', 'api_key')
         project = config.get('sofort', 'project_id')
 
-        self.client = sofort.Client(username, password, project)
+        self.client = sofort.Client(username, password, project,
+            success_url = 'http://sli.tw1.ru/sofort/success.php?trn={}'.format(sofort.TRANSACTION_ID),
+            abort_url = 'http://sli.tw1.ru/sofort/abort.php?trn={}'.format(sofort.TRANSACTION_ID),
+            notification_urls = {
+                'default': 'http://sli.tw1.ru/sofort/notify.php?trn={}'.format(sofort.TRANSACTION_ID),
+                'loss': 'http://sli.tw1.ru/sofort/notify.php?trn={}'.format(sofort.TRANSACTION_ID),
+                'refund': 'http://sli.tw1.ru/sofort/notify.php?trn={}'.format(sofort.TRANSACTION_ID)
+            },
+            reasons = [sofort.TRANSACTION_ID]
+        )
 
     def test_defaults_init(self):
         c = sofort.Client('user', 'password', '123', test_field='test')
@@ -38,17 +47,18 @@ class TestSofort(unittest.TestCase):
         tran = self.client.payment(12.2,
             success_url = 'http://sli.tw1.ru/sofort/success.php?trn={}'.format(sofort.TRANSACTION_ID),
             abort_url = 'http://sli.tw1.ru/sofort/abort.php?trn={}'.format(sofort.TRANSACTION_ID),
-            notification_urls={
+            notification_urls = {
                 'default': 'http://sli.tw1.ru/sofort/notify.php?trn={}'.format(sofort.TRANSACTION_ID),
                 'loss': 'http://sli.tw1.ru/sofort/notify.php?trn={}'.format(sofort.TRANSACTION_ID),
                 'refund': 'http://sli.tw1.ru/sofort/notify.php?trn={}'.format(sofort.TRANSACTION_ID)
             },
-            reasons=[
+            reasons = [
                 'Invoice 0001 payment',
                 sofort.TRANSACTION_ID
             ]
         )
         self.assertEqual('123456-123456-56A3BE0E-ACAB', tran.transaction)
+        self.assertIsInstance(tran.payment_url, basestring)
         self.assertEqual('https://www.sofort.com/payment/go/136b2012718da0160fac20c2ec2f51100c90406e', tran.payment_url)
 
     def test_details_multiple_transaction_ids(self):
@@ -57,16 +67,50 @@ class TestSofort(unittest.TestCase):
             '123456-123456-56A29EC6-066A',
             '123456-123456-56A2A0C3-CA99'
         ]
-        info = self.client.details(tran_id)
-        self.assertEqual(2, len(info.transaction_details))
-        for tran in info.transaction_details:
+        transactions = self.client.details(tran_id)
+        self.assertEqual(2, len(transactions))
+        for tran in transactions:
             self.assertTrue(tran.transaction in tran_id)
 
     def test_details_single_transaction_id(self):
         self.client._request_xml = MagicMock(return_value=TRANSACTION_BY_ID_RESPONSE)
         info = self.client.details('123456-123456-56A29EC6-066A')
-        self.assertEqual(1, len(info.transaction_details))
-        self.assertEqual('123456-123456-56A29EC6-066A', info.transaction_details.transaction)
+        self.assertEqual(1, len(info))
+        self.assertEqual('123456-123456-56A29EC6-066A', info[0].transaction)
+        self.assertEqual(2, len(info[0].reasons))
+        self.assertIn('Testueberweisung', info[0].reasons)
+        self.assertEqual('test', info[0].user_variables[0])
+        self.assertEqual('88888888', info[0].sender.bank_code)
+        self.assertEqual('0', info[0].su.consumer_protection)
+
+    def test_root_error(self):
+        self.client._request_xml = MagicMock(return_value=ROOT_ERROR)
+        self.assertRaises(sofort.exceptions.RequestError, self.client.details,
+                          '123456-123456-56A29EC6-066A')
+
+    def test_root_many_errors(self):
+        self.client._request_xml = MagicMock(return_value=ROOT_ERRORS)
+        self.assertRaises(sofort.exceptions.RequestErrors, self.client.details,
+                          '123456-123456-56A29EC6-066A')
+
+
+    @unittest.skip('You will catch root error anyway')
+    def test_nested_errors(self):
+        self.client._request_xml = MagicMock(return_value=NEST_ERRORS)
+        self.assertRaises(sofort.exceptions.RequestErrors, self.client.details,
+                          '123456-123456-56A29EC6-066A')
+
+    def test_warning(self):
+        self.client._request_xml = MagicMock(return_value=EXTRA_WARNING)
+        with warnings.catch_warnings(record=True) as w:
+            payment = self.client.payment(12.2)
+            self.assertEqual(1, len(w))
+            self.assertEqual(w[0].category, sofort.exceptions.SofortWarning)
+            self.assertEqual('Unsupported language.', w[0].message.message)
+            self.assertEqual('8049', w[0].message.code)
+            self.assertEqual('language_code', w[0].message.field)
+            self.assertEqual('[8049] language_code: Unsupported language.',
+                             str(w[0].message))
 
 TRANSACTION_RESPONSE = u"""<?xml version="1.0" encoding="UTF-8" ?>
 <new_transaction>
@@ -253,3 +297,57 @@ TRANSACTION_BY_ID_RESPONSE = u"""<?xml version="1.0" encoding="UTF-8" ?>
         </status_history_items>
     </transaction_details>
 </transactions>"""
+
+NEST_ERRORS = """<?xml version="1.0" encoding="UTF-8" ?>
+<errors>
+    <error>
+        <code>8054</code>
+        <message>All products deactivated due to errors, initiation aborted.</message>
+    </error>
+    <su>
+        <errors>
+            <error>
+                <code>8014</code>
+                <message>Invalid amount.</message>
+                <field>amount</field>
+            </error>
+        </errors>
+    </su>
+</errors>
+"""
+
+ROOT_ERROR = """<?xml version="1.0" encoding="UTF-8" ?>
+<errors>
+    <error>
+        <code>7000</code>
+        <message>Mismatched tag. line: 24, char: 29, tag: multipay-&gt;su-&gt;reasons</message>
+    </error>
+</errors>
+"""
+
+ROOT_ERRORS = """<?xml version="1.0" encoding="UTF-8" ?>
+<errors>
+    <error>
+        <code>7000</code>
+        <message>Mismatched tag. line: 24, char: 29, tag: multipay-&gt;su-&gt;reasons</message>
+    </error>
+    <error>
+        <code>9999</code>
+        <message>Something gone wrong</message>
+    </error>
+</errors>
+"""
+
+EXTRA_WARNING = """<?xml version="1.0" encoding="UTF-8" ?>
+<new_transaction>
+    <transaction>123456-123456-56A3BE0E-ACAB</transaction>
+    <payment_url>https://www.sofort.com/payment/go/136b2012718da0160fac20c2ec2f51100c90406e</payment_url>
+    <warnings>
+        <warning>
+            <code>8049</code>
+            <message>Unsupported language.</message>
+            <field>language_code</field>
+        </warning>
+    </warnings>
+</new_transaction>
+"""

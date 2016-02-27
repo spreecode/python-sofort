@@ -28,3 +28,9 @@ def strip_reason(reason):
     @see: https://www.sofort.com/integrationCenter-eng-DE/content/view/full/2513#h5-1
     """
     return re.sub('(?u)[^\w\ \+\-\.\,]', '', reason)
+
+
+def as_list(value):
+    if not isinstance(value, list):
+        value = [value]
+    return value

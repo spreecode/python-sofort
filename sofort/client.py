@@ -1,10 +1,11 @@
 import datetime
 import requests
-from lxml import objectify
 
-import sofort.exceptions
-import sofort.internals
 import sofort.xml
+
+from sofort.exceptions import UnauthorizedError, RequestErrors
+from sofort.internals import Config, as_list
+from sofort import model
 
 from _version import __version__
 
@@ -16,7 +17,7 @@ TRANSACTION_HISTORY_LIMIT = datetime.timedelta(days=30)
 
 class Client(object):
     def __init__(self, user_id, api_key, project_id, **kwargs):
-        self.config = sofort.internals.Config(
+        self.config = Config(
             base_url=API_URL,
             user_id=user_id,
             api_key=api_key,
@@ -59,9 +60,9 @@ class Client(object):
         return self._request(sofort.xml.multipay(params), params)
 
     def details(self, transaction_ids):
-        if isinstance(transaction_ids, basestring):
-            transaction_ids = [transaction_ids]
-        return self._request(sofort.xml.transaction_request_by_ids(transaction_ids))
+        request_body = sofort.xml.transaction_request_by_ids(
+                            as_list(transaction_ids))
+        return self._request(request_body)
 
     def find_transactions(self, from_time=None, to_time=None, number=10,
                           **extra_params):
@@ -91,11 +92,7 @@ class Client(object):
 
         # Actually there are no unicode characters in response
         response = str(self._request_xml(config, data))
-        result = objectify.fromstring(response)
-        if hasattr(result, 'error'):
-            raise sofort.exceptions.RequestErrors(result)
-        else:
-            return result
+        return model.response(response)
 
     def _request_xml(self, config, data):
         r = requests.post(config.base_url,
@@ -105,7 +102,10 @@ class Client(object):
         if r.status_code == 200:
             return r.text
         elif r.status_code == 401:
-            raise sofort.exceptions.UnauthorizedError()
+            raise UnauthorizedError()
+        elif r.status_code == 404:
+            raise Exception('Sofort resource not found: {}'.format(
+                                config.base_url))
         else:
             raise NotImplementedError(
                 'Unknown response status: {}'.format(r.status_code)

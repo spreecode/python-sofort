@@ -51,12 +51,8 @@ setup(
         #   4 - Beta
         #   5 - Production/Stable
         'Development Status :: 2 - Pre-Alpha',
-
-        # Indicate who your project is intended for
         'Intended Audience :: Developers',
         'Topic :: Office/Business',
-
-        # Pick your license as you wish (should match "license" above)
         'License :: OSI Approved :: MIT License',
 
         # Specify the Python versions you support here. In particular, ensure
@@ -90,8 +86,7 @@ setup(
     # $ pip install -e .[dev,test]
     extras_require={
     #     'dev': ['check-manifest'],
-    #     'test': ['coverage'],
-        'test': ['mock'],
+        'test': ['mock', 'coverage'],
     },
 
     # If there are data files included in your packages that need to be
