@@ -39,7 +39,7 @@ def is_sofort_list(value, collection_name):
 
 
 class OpenStruct(object):
-    def load(self, data):
+    def _load(self, data):
         for key, value in data.iteritems():
             setattr(self, key, self.__load_value(value, key))
 
@@ -53,7 +53,7 @@ class OpenStruct(object):
 
         elif isinstance(value, dict):
             container = OpenStruct()
-            container.load(value)
+            container._load(value)
             return container
 
         else:
@@ -67,16 +67,15 @@ class BaseResponse(OpenStruct):
 
 
 class TransactionInfo(BaseResponse):
-    def __init__(self, reasons=[], **payload):
+    def __init__(self, **payload):
         super(TransactionInfo, self).__init__(**payload)
-        self.reasons = reasons['reason']
-        self.load(payload)
+        self._load(payload)
 
 
 class Payment(BaseResponse):
     def __init__(self, **payload):
         super(Payment, self).__init__(**payload)
-        self.load(payload)
+        self._load(payload)
 
 
 factories = {

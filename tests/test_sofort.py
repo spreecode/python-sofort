@@ -112,6 +112,11 @@ class TestSofort(unittest.TestCase):
             self.assertEqual('[8049] language_code: Unsupported language.',
                              str(w[0].message))
 
+    def test_empty_response(self):
+        self.client._request_xml = MagicMock(return_value='<transaction />')
+        payment = self.client.payment(12.2)
+        self.assertIs(payment, None)
+
 TRANSACTION_RESPONSE = u"""<?xml version="1.0" encoding="UTF-8" ?>
 <new_transaction>
     <transaction>123456-123456-56A3BE0E-ACAB</transaction>
