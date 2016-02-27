@@ -94,7 +94,7 @@ setup(
     # requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
     # install_requires=['peppercorn'],
-    install_requires=['requests', 'lxml', 'xmltodict'],
+    install_requires=['requests', 'lxml', 'xmltodict', 'schematics', 'iso8601'],
 
     # List additional groups of dependencies here (e.g. development
     # dependencies). You can install these using the following syntax,

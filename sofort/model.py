@@ -1,22 +1,15 @@
 import xmltodict
-import copy
 from warnings import warn
+
+import iso8601
+
+from schematics.models import Model
+from schematics.types import (URLType, StringType, IntType, BooleanType,
+                              DateTimeType, DecimalType, EmailType)
+from schematics.types.compound import ListType, ModelType
 
 from sofort.exceptions import RequestError, RequestErrors, SofortWarning
 from sofort.internals import as_list
-
-def transaction_list(transaction_details):
-    return [TransactionInfo(**transact)
-                for transact
-                in as_list(transaction_details)]
-
-
-def error_list(error=None, **data):
-    if isinstance(error, list):
-        raise RequestErrors([RequestError(**error_item) for error_item in error])
-    else:
-        raise RequestError(**error)
-
 
 def response(xmlstr):
     result = xmltodict.parse(xmlstr)
@@ -24,62 +17,126 @@ def response(xmlstr):
     for root, value in result.iteritems():
         if value is None:
             return None
-        return factories[root](**value)
+        factory = factories[root]
+        return factory(value)
 
 
-def is_sofort_list(value, collection_name):
-    if len(value.keys()) != 1:
-        return False
-
-    item_key_name = value.keys()[0]
-    if collection_name != item_key_name + 's':
-        return False
-
-    return True
+class ForcedListType(ListType):
+    def to_native(self, value):
+        return [self.field.to_native(item) for item in as_list(value)]
 
 
-class OpenStruct(object):
-    def _load(self, data):
-        for key, value in data.iteritems():
-            setattr(self, key, self.__load_value(value, key))
+class SofortListType(ForcedListType):
+    def __init__(self, field_name='', *args, **kwargs):
+        super(SofortListType, self).__init__(*args, **kwargs)
+        self.field_name = field_name
 
-    def __load_value(self, value, colname=''):
-        if isinstance(value, list):
-            return [self.__load_value(item) for item in value]
-
-        elif isinstance(value, dict) and is_sofort_list(value, colname):
-            item_name = value.keys()[0]
-            return self.__load_value(as_list(value[item_name]))
-
-        elif isinstance(value, dict):
-            container = OpenStruct()
-            container._load(value)
-            return container
-
-        else:
-            return value
-
-class BaseResponse(OpenStruct):
-    def __init__(self, warnings=None, **payload):
-        if warnings:
-            for warning in as_list(warnings['warning']):
-                warn(SofortWarning(**warning))
+    def to_native(self, value):
+        return super(SofortListType, self).to_native(value[self.field_name])
 
 
-class TransactionInfo(BaseResponse):
-    def __init__(self, **payload):
-        super(TransactionInfo, self).__init__(**payload)
-        self._load(payload)
+class Iso8601DateTimeType(DateTimeType):
+    def to_native(self, value):
+        return iso8601.parse_date(value)
 
 
-class Payment(BaseResponse):
-    def __init__(self, **payload):
-        super(Payment, self).__init__(**payload)
-        self._load(payload)
+class ErrorModel(Model):
+    code = IntType()
+    message = StringType()
+    field = StringType()
+
+
+class WarningModel(ErrorModel):
+    def import_data(self, *args, **kwargs):
+        super(WarningModel, self).import_data(*args, **kwargs)
+        warn(SofortWarning(**self.to_primitive()))
+
+
+class SuErrorModel(Model):
+    errors = SofortListType('error', ModelType(ErrorModel))
+
+
+class RootErrorsModel(Model):
+    error = ForcedListType(ModelType(ErrorModel))
+    su = ModelType(SuErrorModel)
+
+
+class NewTransactionModel(Model):
+    transaction = StringType()
+    payment_url = URLType()
+    warnings = SofortListType('warning', ModelType(WarningModel))
+
+
+class BankAccountModel(Model):
+    holder = StringType()
+    account_number = StringType()
+    bank_code = StringType()
+    bank_name = StringType()
+    bic = StringType()
+    iban = StringType()
+    country_code = StringType()
+
+
+class CostsModel(Model):
+    fees = DecimalType()
+    currency_code = StringType()
+    exchange_rate = DecimalType()
+
+
+class SuModel(Model):
+    consumer_protection = BooleanType()
+
+
+class StatusHistoryItemModel(Model):
+    status = StringType()
+    status_reason = StringType()
+    time = Iso8601DateTimeType()
+
+
+class TransactionDetailsModel(Model):
+    transaction = StringType()
+    project_id = IntType()
+    test = BooleanType()
+    time = Iso8601DateTimeType()
+    status = StringType()
+    status_reason = StringType()
+    status_modified = StringType()
+    payment_method = StringType()
+    language_code = StringType()
+    amount = DecimalType()
+    amount_refunded = DecimalType()
+    currency_code = StringType()
+    reasons = SofortListType('reason', StringType())
+    user_variables = SofortListType('user_variable', StringType())
+    sender = ModelType(BankAccountModel)
+    recipient = ModelType(BankAccountModel)
+    phone_customer = StringType()
+    email_customer = EmailType()
+    exchange_rate = DecimalType()
+    costs = ModelType(CostsModel)
+    su = ModelType(SuModel)
+    status_history_items = SofortListType('status_history_item',
+                                          ModelType(StatusHistoryItemModel))
+
+
+def transaction_list(transactions):
+    return [TransactionDetailsModel(transact)
+                for transact
+                in as_list(transactions['transaction_details'])]
+
+
+def error_handler(data):
+    root = RootErrorsModel(data)
+    errors = [RequestError(**error_item) for error_item in root.error]
+    if root.su:
+        errors.extend([RequestError(**error_item)
+                            for error_item
+                            in root.su.errors])
+    raise RequestErrors(errors)
 
 
 factories = {
-    'errors': error_list,
+    'errors': error_handler,
     'transactions': transaction_list,
-    'new_transaction': Payment,
+    'new_transaction': NewTransactionModel,
 }

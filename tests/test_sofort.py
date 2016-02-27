@@ -81,11 +81,11 @@ class TestSofort(unittest.TestCase):
         self.assertIn('Testueberweisung', info[0].reasons)
         self.assertEqual('test', info[0].user_variables[0])
         self.assertEqual('88888888', info[0].sender.bank_code)
-        self.assertEqual('0', info[0].su.consumer_protection)
+        self.assertFalse(info[0].su.consumer_protection)
 
     def test_root_error(self):
         self.client._request_xml = MagicMock(return_value=ROOT_ERROR)
-        self.assertRaises(sofort.exceptions.RequestError, self.client.details,
+        self.assertRaises(sofort.exceptions.RequestErrors, self.client.details,
                           '123456-123456-56A29EC6-066A')
 
     def test_root_many_errors(self):
@@ -93,9 +93,7 @@ class TestSofort(unittest.TestCase):
         self.assertRaises(sofort.exceptions.RequestErrors, self.client.details,
                           '123456-123456-56A29EC6-066A')
 
-
-    @unittest.skip('You will catch root error anyway')
-    def test_nested_errors(self):
+    def test_extended_errors(self):
         self.client._request_xml = MagicMock(return_value=NEST_ERRORS)
         self.assertRaises(sofort.exceptions.RequestErrors, self.client.details,
                           '123456-123456-56A29EC6-066A')
@@ -107,7 +105,7 @@ class TestSofort(unittest.TestCase):
             self.assertEqual(1, len(w))
             self.assertEqual(w[0].category, sofort.exceptions.SofortWarning)
             self.assertEqual('Unsupported language.', w[0].message.message)
-            self.assertEqual('8049', w[0].message.code)
+            self.assertEqual(8049, w[0].message.code)
             self.assertEqual('language_code', w[0].message.field)
             self.assertEqual('[8049] language_code: Unsupported language.',
                              str(w[0].message))
