@@ -22,6 +22,8 @@ def response(xmlstr):
     result = xmltodict.parse(xmlstr)
     # only one root element is allowed in XML
     for root, value in result.iteritems():
+        if value is None:
+            return None
         return factories[root](**value)
 
 
