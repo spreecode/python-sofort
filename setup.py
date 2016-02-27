@@ -7,10 +7,26 @@ https://github.com/pypa/sampleproject
 import re
 
 # Always prefer setuptools over distutils
-from setuptools import setup, find_packages
+from setuptools import setup, find_packages, Command
 # To use a consistent encoding
 from codecs import open
-from os import path
+from os import path, system
+
+
+class CoverageCommand(Command):
+    description = "coverage report"
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        system('coverage run --source sofort setup.py test')
+        system('coverage html')
+
 
 VERSIONFILE="sofort/_version.py"
 verstrline = open(VERSIONFILE, "rt").read()
@@ -110,6 +126,10 @@ setup(
     #        'sample=dpd:main',
     #    ],
     #},
+
+    cmdclass={
+        'coverage': CoverageCommand
+    },
 
     test_suite="tests",
 )
