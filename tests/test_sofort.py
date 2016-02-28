@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import unittest
 import warnings
 
@@ -263,7 +265,7 @@ TRANSACTION_BY_ID_RESPONSE = u"""<?xml version="1.0" encoding="UTF-8" ?>
             <user_variable>test</user_variable>
         </user_variables>
         <sender>
-            <holder>Warnecke Hans-Gerd</holder>
+            <holder>李四</holder>
             <account_number>12345678</account_number>
             <bank_code>88888888</bank_code>
             <bank_name>Demo Bank</bank_name>

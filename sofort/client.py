@@ -102,8 +102,7 @@ class Client(object):
         if config is None:
             config = self.config.clone()
 
-        # Actually there are no unicode characters in response
-        response = str(self._request_xml(config, data))
+        response = self._request_xml(config, data).encode('utf-8')
         return model.response(response)
 
     def _request_xml(self, config, data):
