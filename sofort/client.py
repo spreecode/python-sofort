@@ -16,6 +16,18 @@ TRANSACTION_HISTORY_LIMIT = datetime.timedelta(days=30)
 
 
 class Client(object):
+    """
+    Sofort client. You can pass additional arguments to use them
+    as default fall-back values when ``payment(...)`` request is
+    performed.
+
+    :param str user_id:
+        User ID
+    :param str api_key:
+        API key
+    :param str project_id:
+        Project ID
+    """
     def __init__(self, user_id, api_key, project_id, **kwargs):
         self.config = Config(
             base_url=API_URL,

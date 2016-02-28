@@ -91,7 +91,7 @@ Testing
     $ pip install -e '.[test]' # to obtain mock library
     $ python setup.py test
 
-Be careful, transaction ID contains some about to sensitive data:
+Be careful, transaction ID contains some sensitive data:
 
 ::
 

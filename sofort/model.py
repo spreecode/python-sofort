@@ -94,13 +94,13 @@ class StatusHistoryItemModel(Model):
 
 
 class TransactionDetailsModel(Model):
-    transaction = StringType()
     project_id = IntType()
+    transaction = StringType()
     test = BooleanType()
     time = Iso8601DateTimeType()
     status = StringType()
     status_reason = StringType()
-    status_modified = StringType()
+    status_modified = Iso8601DateTimeType()
     payment_method = StringType()
     language_code = StringType()
     amount = DecimalType()
@@ -110,8 +110,8 @@ class TransactionDetailsModel(Model):
     user_variables = SofortListType('user_variable', StringType())
     sender = ModelType(BankAccountModel)
     recipient = ModelType(BankAccountModel)
-    phone_customer = StringType()
     email_customer = EmailType()
+    phone_customer = StringType()
     exchange_rate = DecimalType()
     costs = ModelType(CostsModel)
     su = ModelType(SuModel)
