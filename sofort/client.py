@@ -34,7 +34,7 @@ class Client(object):
             user_id=user_id,
             api_key=api_key,
             project_id=project_id,
-            interface_version='python_sofort_v.{}'.format(__version__),
+            interface_version='python_sofort_v.{0}'.format(__version__),
             currency_code='EUR',
             country_code='DE',
             success_link_redirect=True,
