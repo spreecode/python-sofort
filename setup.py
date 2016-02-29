@@ -53,9 +53,7 @@ setup(
 
     description='Sofort API',
     long_description=long_description,
-
-    # The project's main homepage.
-    url='',
+    url='https://github.com/spreecode/python-sofort',
     author='Leonid Suprun',
     author_email='mr.slay@gmail.com',
     license='MIT',
@@ -63,10 +61,9 @@ setup(
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
         # How mature is this project? Common values are
-        #   3 - Alpha
         #   4 - Beta
         #   5 - Production/Stable
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
         'Topic :: Office/Business',
         'License :: OSI Approved :: MIT License',
@@ -94,7 +91,12 @@ setup(
     # requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
     # install_requires=['peppercorn'],
-    install_requires=['requests', 'lxml', 'xmltodict', 'schematics', 'iso8601'],
+    install_requires=[
+        'requests >= 2.9, < 3.0',
+        'lxml >= 3.5, < 4.0',
+        'xmltodict >= 0.10, < 1.0',
+        'schematics >= 1.1, < 2.0',
+        'iso8601 >= 0.1, < 1.0'],
 
     # List additional groups of dependencies here (e.g. development
     # dependencies). You can install these using the following syntax,
