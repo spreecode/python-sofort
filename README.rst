@@ -1,7 +1,11 @@
 Sofort
 ======
 
-Building brick to ease Sofort payments in your application.
+.. rubric:: Building brick to ease Sofort payments in your application.
+
+.. image:: https://travis-ci.org/spreecode/python-sofort.svg?branch=master
+  :target: https://travis-ci.org/spreecode/python-sofort
+  :alt: Build Status
 
 This library is still in hard development so when in doubt, check original
 Sofort Reference_.
