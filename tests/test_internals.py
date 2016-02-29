@@ -12,13 +12,15 @@ class TestSofortConfig(unittest.TestCase):
         self.assertTrue(c.c)
 
     def test_clone(self):
-        a = Config(bunny='hope', white='stripes')
+        a = Config(bunny='hope', white='stripes', array=[1])
         b = a.clone()
-        self.assertIsNot(a, b)
         self.assertEqual(a.bunny, b.bunny)
         self.assertEqual(a.white, b.white)
         b.bunny = 'bugz'
         self.assertNotEqual(a.bunny, b.bunny)
+        a.array.pop()
+        self.assertEqual(0, len(a.array))
+        self.assertEqual(1, b.array[0])
 
     def test_deep_clone(self):
         a = Config(chips={

@@ -22,12 +22,12 @@ class TestSofort(unittest.TestCase):
         project = config.get('sofort', 'project_id')
 
         self.client = sofort.Client(username, password, project,
-            success_url = 'http://sli.tw1.ru/sofort/success.php?trn={}'.format(sofort.TRANSACTION_ID),
-            abort_url = 'http://sli.tw1.ru/sofort/abort.php?trn={}'.format(sofort.TRANSACTION_ID),
+            success_url = 'http://sli.tw1.ru/sofort/success.php?trn={0}'.format(sofort.TRANSACTION_ID),
+            abort_url = 'http://sli.tw1.ru/sofort/abort.php?trn={0}'.format(sofort.TRANSACTION_ID),
             notification_urls = {
-                'default': 'http://sli.tw1.ru/sofort/notify.php?trn={}'.format(sofort.TRANSACTION_ID),
-                'loss': 'http://sli.tw1.ru/sofort/notify.php?trn={}'.format(sofort.TRANSACTION_ID),
-                'refund': 'http://sli.tw1.ru/sofort/notify.php?trn={}'.format(sofort.TRANSACTION_ID)
+                'default': 'http://sli.tw1.ru/sofort/notify.php?trn={0}'.format(sofort.TRANSACTION_ID),
+                'loss': 'http://sli.tw1.ru/sofort/notify.php?trn={0}'.format(sofort.TRANSACTION_ID),
+                'refund': 'http://sli.tw1.ru/sofort/notify.php?trn={0}'.format(sofort.TRANSACTION_ID)
             },
             reasons = [sofort.TRANSACTION_ID]
         )
@@ -47,12 +47,12 @@ class TestSofort(unittest.TestCase):
     def test_pay(self):
         self.client._request_xml = MagicMock(return_value=TRANSACTION_RESPONSE)
         tran = self.client.payment(12.2,
-            success_url = 'http://sli.tw1.ru/sofort/success.php?trn={}'.format(sofort.TRANSACTION_ID),
-            abort_url = 'http://sli.tw1.ru/sofort/abort.php?trn={}'.format(sofort.TRANSACTION_ID),
+            success_url = 'http://sli.tw1.ru/sofort/success.php?trn={0}'.format(sofort.TRANSACTION_ID),
+            abort_url = 'http://sli.tw1.ru/sofort/abort.php?trn={0}'.format(sofort.TRANSACTION_ID),
             notification_urls = {
-                'default': 'http://sli.tw1.ru/sofort/notify.php?trn={}'.format(sofort.TRANSACTION_ID),
-                'loss': 'http://sli.tw1.ru/sofort/notify.php?trn={}'.format(sofort.TRANSACTION_ID),
-                'refund': 'http://sli.tw1.ru/sofort/notify.php?trn={}'.format(sofort.TRANSACTION_ID)
+                'default': 'http://sli.tw1.ru/sofort/notify.php?trn={0}'.format(sofort.TRANSACTION_ID),
+                'loss': 'http://sli.tw1.ru/sofort/notify.php?trn={0}'.format(sofort.TRANSACTION_ID),
+                'refund': 'http://sli.tw1.ru/sofort/notify.php?trn={0}'.format(sofort.TRANSACTION_ID)
             },
             reasons = [
                 'Invoice 0001 payment',
