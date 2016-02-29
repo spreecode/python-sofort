@@ -3,12 +3,17 @@ Sofort
 
 .. rubric:: Building brick to ease Sofort payments in your application.
 
+This library is still in hard development so when in doubt, check original
+Sofort Reference_.
+
 .. image:: https://travis-ci.org/spreecode/python-sofort.svg?branch=master
   :target: https://travis-ci.org/spreecode/python-sofort
   :alt: Build Status
 
-This library is still in hard development so when in doubt, check original
-Sofort Reference_.
+.. image:: https://coveralls.io/repos/github/spreecode/python-sofort/badge.svg?branch=master
+  :target: https://coveralls.io/github/spreecode/python-sofort?branch=master
+  :alt: Coverage
+
 
 Installation
 ------------
