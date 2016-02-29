@@ -11,8 +11,7 @@ Installation
 
 ::
 
-    $ pip install git+ssh://git@bitbucket.org/spreenauten/python-sofort.git
-
+    $ pip install git+ssh://git@github.com/spreecode/python-sofort.git
 
 Usage
 -----
@@ -42,7 +41,7 @@ Usage
     webserver.redirect(payment_data.payment_url)
 
 When payment is proccessed, client will be redirected to ``success_url`` and
-Sofort server will send GET-request to ``notification_urls`` as soon as
+Sofort server will send POST-request to ``notification_urls`` as soon as
 transaction status will be changed. You can use ``sofort.TRANSACTION_ID`` in
 URL params, so notification url could be like this: ::
 
@@ -93,13 +92,13 @@ Be careful, transaction ID contains some sensitive data ::
 
     123456-321321-56A29EC6-066A
     ^^^^^^ ^^^^^^
-       |      '---------------- Project ID
-       '----------------------- User ID
+       |      |
+    User ID   |
+          Project ID
 
-Of course this data should be visible to customer on payment page, and it's
+Of course this data will be visible to customer on payment page, and it's
 almost useless without API key. Still I think it's bad idea to store unmasked
 transaction IDs in repo.
-
 
 .. _Reference: https://www.sofort.com/integrationCenter-eng-DE/content/view/full/2513
 .. _Schematics: https://github.com/schematics/schematics
