@@ -85,6 +85,11 @@ class TestSofort(unittest.TestCase):
         self.assertEqual('88888888', info[0].sender.bank_code)
         self.assertFalse(info[0].su.consumer_protection)
 
+    def test_details_find_transactions_by_params(self):
+        self.client._request_xml = MagicMock(return_value=TRANSACTION_LIST_BY_SEARCH_PARAMS)
+        found = self.client.find_transactions()
+        self.assertIs(3, len(found))
+
     def test_root_error(self):
         self.client._request_xml = MagicMock(return_value=ROOT_ERROR)
         self.assertRaises(sofort.exceptions.RequestErrors, self.client.details,
@@ -116,6 +121,7 @@ class TestSofort(unittest.TestCase):
         self.client._request_xml = MagicMock(return_value='<transaction />')
         payment = self.client.payment(12.2)
         self.assertIs(payment, None)
+
 
 TRANSACTION_RESPONSE = u"""<?xml version="1.0" encoding="UTF-8" ?>
 <new_transaction>
@@ -302,6 +308,176 @@ TRANSACTION_BY_ID_RESPONSE = u"""<?xml version="1.0" encoding="UTF-8" ?>
         </status_history_items>
     </transaction_details>
 </transactions>"""
+
+TRANSACTION_LIST_BY_SEARCH_PARAMS = u"""<?xml version="1.0" encoding="UTF-8" ?>
+<transactions>
+    <transaction_details>
+        <project_id>123456</project_id>
+        <transaction>123456-123456-56D04809-B816</transaction>
+        <test>1</test>
+        <time>2016-02-26T13:42:10+01:00</time>
+        <status>untraceable</status>
+        <status_reason>sofort_bank_account_needed</status_reason>
+        <status_modified>2016-02-26T13:42:10+01:00</status_modified>
+        <payment_method>su</payment_method>
+        <language_code>en</language_code>
+        <amount>1.00</amount>
+        <amount_refunded>0.00</amount_refunded>
+        <currency_code>EUR</currency_code>
+        <reasons>
+            <reason>sofort.com - Test</reason>
+            <reason>cda5dd7ef2</reason>
+        </reasons>
+        <user_variables>
+            <user_variable>Variable 0</user_variable>
+        </user_variables>
+        <sender>
+            <holder>Max Mustermann</holder>
+            <account_number>23456789</account_number>
+            <bank_code>00000</bank_code>
+            <bank_name>Demo Bank</bank_name>
+            <bic>SFRTDE20XXX</bic>
+            <iban>DE06000000000023456789</iban>
+            <country_code>DE</country_code>
+        </sender>
+        <recipient>
+            <holder>My Company GmbH</holder>
+            <account_number>0000000000</account_number>
+            <bank_code>00000000</bank_code>
+            <bank_name>Raiffeisenbank Oberteuringen</bank_name>
+            <bic>AAAAAAAAAAA</bic>
+            <iban>DE00000000000000000001</iban>
+            <country_code>DE</country_code>
+        </recipient>
+        <email_customer>customer@example.net</email_customer>
+        <phone_customer />
+        <exchange_rate>1.0000</exchange_rate>
+        <costs>
+            <fees>0.00</fees>
+            <currency_code>EUR</currency_code>
+            <exchange_rate>1.0000</exchange_rate>
+        </costs>
+        <su>
+            <consumer_protection>0</consumer_protection>
+        </su>
+        <status_history_items>
+            <status_history_item>
+                <status>untraceable</status>
+                <status_reason>sofort_bank_account_needed</status_reason>
+                <time>2016-02-26T13:42:10+01:00</time>
+            </status_history_item>
+        </status_history_items>
+    </transaction_details>
+    <transaction_details>
+        <project_id>123456</project_id>
+        <transaction>123456-123456-56D17B10-DDBE</transaction>
+        <test>1</test>
+        <time>2016-02-27T11:32:50+01:00</time>
+        <status>untraceable</status>
+        <status_reason>sofort_bank_account_needed</status_reason>
+        <status_modified>2016-02-27T11:32:50+01:00</status_modified>
+        <payment_method>su</payment_method>
+        <language_code>de</language_code>
+        <amount>12.00</amount>
+        <amount_refunded>0.00</amount_refunded>
+        <currency_code>EUR</currency_code>
+        <reasons>
+            <reason>Donation</reason>
+        </reasons>
+        <user_variables />
+        <sender>
+            <holder>Warnecke Hans-Gerd</holder>
+            <account_number>12345678</account_number>
+            <bank_code>88888888</bank_code>
+            <bank_name>Demo Bank</bank_name>
+            <bic>SFRTDE20XXX</bic>
+            <iban>DE52000000000012345678</iban>
+            <country_code>DE</country_code>
+        </sender>
+        <recipient>
+            <holder>My Company GmbH</holder>
+            <account_number>0000000000</account_number>
+            <bank_code>00000000</bank_code>
+            <bank_name>Raiffeisenbank Oberteuringen</bank_name>
+            <bic>AAAAAAAAAAA</bic>
+            <iban>DE00000000000000000001</iban>
+            <country_code>DE</country_code>
+        </recipient>
+        <email_customer />
+        <phone_customer />
+        <exchange_rate>1.0000</exchange_rate>
+        <costs>
+            <fees>0.00</fees>
+            <currency_code>EUR</currency_code>
+            <exchange_rate>1.0000</exchange_rate>
+        </costs>
+        <su>
+            <consumer_protection>0</consumer_protection>
+        </su>
+        <status_history_items>
+            <status_history_item>
+                <status>untraceable</status>
+                <status_reason>sofort_bank_account_needed</status_reason>
+                <time>2016-02-27T11:32:50+01:00</time>
+            </status_history_item>
+        </status_history_items>
+    </transaction_details>
+    <transaction_details>
+        <project_id>123456</project_id>
+        <transaction>123456-123456-56D1D0AC-AD00</transaction>
+        <test>1</test>
+        <time>2016-02-27T17:37:57+01:00</time>
+        <status>untraceable</status>
+        <status_reason>sofort_bank_account_needed</status_reason>
+        <status_modified>2016-02-27T17:37:57+01:00</status_modified>
+        <payment_method>su</payment_method>
+        <language_code>de</language_code>
+        <amount>12.00</amount>
+        <amount_refunded>0.00</amount_refunded>
+        <currency_code>EUR</currency_code>
+        <reasons>
+            <reason>Donation</reason>
+        </reasons>
+        <user_variables />
+        <sender>
+            <holder>Maria &amp; Josef Warnecke</holder>
+            <account_number>1234567899</account_number>
+            <bank_code>88888888</bank_code>
+            <bank_name>Demo Bank</bank_name>
+            <bic>SFRTDE20XXX</bic>
+            <iban>DE30000000001234567899</iban>
+            <country_code>DE</country_code>
+        </sender>
+        <recipient>
+            <holder>My Company GmbH</holder>
+            <account_number>0000000000</account_number>
+            <bank_code>00000000</bank_code>
+            <bank_name>Raiffeisenbank Oberteuringen</bank_name>
+            <bic>AAAAAAAAAAA</bic>
+            <iban>DE00000000000000000001</iban>
+            <country_code>DE</country_code>
+        </recipient>
+        <email_customer />
+        <phone_customer />
+        <exchange_rate>1.0000</exchange_rate>
+        <costs>
+            <fees>0.00</fees>
+            <currency_code>EUR</currency_code>
+            <exchange_rate>1.0000</exchange_rate>
+        </costs>
+        <su>
+            <consumer_protection>0</consumer_protection>
+        </su>
+        <status_history_items>
+            <status_history_item>
+                <status>untraceable</status>
+                <status_reason>sofort_bank_account_needed</status_reason>
+                <time>2016-02-27T17:37:57+01:00</time>
+            </status_history_item>
+        </status_history_items>
+    </transaction_details>
+</transactions>
+"""
 
 NEST_ERRORS = """<?xml version="1.0" encoding="UTF-8" ?>
 <errors>

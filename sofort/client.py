@@ -12,7 +12,7 @@ from _version import __version__
 API_URL = 'https://api.sofort.com/api/xml'
 TRANSACTION_ID = '-TRANSACTION-'
 
-TRANSACTION_HISTORY_LIMIT = datetime.timedelta(days=30)
+TRANSACTION_HISTORY_LIMIT = datetime.timedelta(days=29)
 
 
 class Client(object):
@@ -41,7 +41,7 @@ class Client(object):
         ).update(kwargs)
 
     def payment(self, amount, **kwargs):
-        """Get payment URL and transaction ID
+        """Get payment URL and new transaction ID
 
         Usage::
 
@@ -72,8 +72,9 @@ class Client(object):
         return self._request(sofort.xml.multipay(params), params)
 
     def details(self, transaction_ids):
-        request_body = sofort.xml.transaction_request_by_ids(
-                            as_list(transaction_ids))
+        request_body = sofort.xml.transaction_request_by_params({
+            'transaction': as_list(transaction_ids)
+        })
         return self._request(request_body)
 
     def find_transactions(self, from_time=None, to_time=None, number=10,
@@ -95,8 +96,8 @@ class Client(object):
             'number': number
         }
         params.update(extra_params)
-        sofort.xml.transaction_request_by_params(params)
-        raise NotImplementedError()
+        request_body = sofort.xml.transaction_request_by_params(params)
+        return self._request(request_body)
 
     def _request(self, data, config=None):
         if config is None:

@@ -47,7 +47,7 @@ class TestSofortXML(XmlTest):
 
         self.assertXmlEqual(
             TRANS_BY_IDS_SAMPLE,
-            sofort.xml.transaction_request_by_ids(ids)
+            sofort.xml.transaction_request_by_params({'transaction': ids})
         )
 
     def test_transactions_request_by_params(self):

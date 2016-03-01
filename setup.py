@@ -92,7 +92,7 @@ setup(
     install_requires=[
         'requests >= 2.9, < 3.0',
         'lxml >= 3.5, < 4.0',
-        'xmltodict >= 0.10, < 1.0',
+        'xmltodict >= 0.9, < 1.0',
         'schematics >= 1.1, < 2.0',
         'iso8601 >= 0.1, < 1.0'],
 
