@@ -14,6 +14,9 @@ Sofort Reference_.
   :target: https://coveralls.io/github/spreecode/python-sofort?branch=master
   :alt: Coverage
 
+.. image:: https://landscape.io/github/spreecode/python-sofort/master/landscape.svg?style=flat
+  :target: https://landscape.io/github/spreecode/python-sofort/master
+  :alt: Code Health
 
 Installation
 ------------

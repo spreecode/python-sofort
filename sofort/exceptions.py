@@ -25,7 +25,7 @@ class RequestError(Exception):
 
     def __str__(self):
         result = str(self.message)
-        if not self.field is None:
+        if self.field is not None:
             result = '{}: {}'.format(self.field, result)
         return result
 

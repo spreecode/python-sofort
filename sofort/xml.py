@@ -51,7 +51,7 @@ def multipay(config):
             if notify_on != 'default':
                 node.set('notify_on', notify_on)
 
-    su = etree.SubElement(root, 'su')
+    etree.SubElement(root, 'su')
 
     return etree.tostring(root)
 
@@ -61,8 +61,8 @@ def transaction_request_by_params(params):
     root.set('version', '2')
     for name, value in params.iteritems():
         if name == 'transaction':
-            for id in value:
-                etree.SubElement(root, 'transaction').text = id
+            for transaction_id in value:
+                etree.SubElement(root, 'transaction').text = transaction_id
         else:
             etree.SubElement(root, name).text = __serialize(value)
     return etree.tostring(root)

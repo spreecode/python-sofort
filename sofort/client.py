@@ -3,7 +3,7 @@ import requests
 
 import sofort.xml
 
-from sofort.exceptions import UnauthorizedError, RequestErrors
+from sofort.exceptions import UnauthorizedError
 from sofort.internals import Config, as_list
 from sofort import model
 
