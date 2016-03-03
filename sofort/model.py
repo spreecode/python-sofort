@@ -28,11 +28,11 @@ class ForcedListType(ListType):
 
 class SofortListType(ForcedListType):
     def __init__(self, field_name='', *args, **kwargs):
-        super(SofortListType, self).__init__(*args, **kwargs)
+        ForcedListType.__init__(self, *args, **kwargs)
         self.field_name = field_name
 
     def to_native(self, value):
-        return super(SofortListType, self).to_native(value[self.field_name])
+        return ForcedListType.to_native(self, value[self.field_name])
 
 
 class Iso8601DateTimeType(DateTimeType):
@@ -48,7 +48,7 @@ class ErrorModel(Model):
 
 class WarningModel(ErrorModel):
     def import_data(self, *args, **kwargs):
-        super(WarningModel, self).import_data(*args, **kwargs)
+        ErrorModel.import_data(self, *args, **kwargs)
         warn(SofortWarning(**self.to_primitive()))
 
 
