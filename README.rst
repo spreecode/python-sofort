@@ -23,7 +23,7 @@ Installation
 
 ::
 
-    $ pip install git+ssh://git@github.com/spreecode/python-sofort.git
+    $ pip install git+https://github.com/spreecode/python-sofort.git
 
 Usage
 -----
