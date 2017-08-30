@@ -59,7 +59,7 @@ def multipay(config):
 def transaction_request_by_params(params):
     root = etree.Element('transaction_request')
     root.set('version', '2')
-    for name, value in params.iteritems():
+    for name, value in params.items():
         if name == 'transaction':
             for transaction_id in value:
                 etree.SubElement(root, 'transaction').text = transaction_id
