@@ -7,7 +7,7 @@ from sofort.exceptions import UnauthorizedError
 from sofort.internals import Config, as_list
 from sofort import model
 
-from _version import __version__
+from sofort._version import __version__
 
 API_URL = 'https://api.sofort.com/api/xml'
 TRANSACTION_ID = '-TRANSACTION-'
