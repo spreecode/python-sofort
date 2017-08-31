@@ -116,7 +116,7 @@ class TransactionDetailsModel(Model):
     costs = ModelType(CostsModel)
     su = ModelType(SuModel)
     status_history_items = SofortListType('status_history_item',
-                                          ModelType(StatusHistoryItemModel)))
+                                          ModelType(StatusHistoryItemModel))
 
 
 class RefundModel(Model):
