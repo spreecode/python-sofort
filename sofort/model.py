@@ -116,7 +116,26 @@ class TransactionDetailsModel(Model):
     costs = ModelType(CostsModel)
     su = ModelType(SuModel)
     status_history_items = SofortListType('status_history_item',
-                                          ModelType(StatusHistoryItemModel))
+                                          ModelType(StatusHistoryItemModel)))
+
+
+class RefundModel(Model):
+    recipient = ModelType(BankAccountModel)
+    transaction = StringType()
+    amount = DecimalType()
+    comment = StringType()
+    reason_1 = StringType()
+    reason_2 = StringType()
+    time = Iso8601DateTimeType()
+    partial_refund_id = StringType()
+    status = StringType()
+    errors = SofortListType('error', ModelType(ErrorModel))
+
+class RefundsModel(Model):
+    sender = ModelType(BankAccountModel)
+    title = StringType()
+    pain = StringType()
+    refund = ModelType(RefundModel)
 
 
 def transaction_list(transactions):
@@ -139,4 +158,5 @@ factories = {
     'errors': error_handler,
     'transactions': transaction_list,
     'new_transaction': NewTransactionModel,
+    'refunds': RefundsModel,
 }
