@@ -63,6 +63,23 @@ class TestSofort(unittest.TestCase):
         self.assertIsInstance(tran.payment_url, basestring)
         self.assertEqual('https://www.sofort.com/payment/go/136b2012718da0160fac20c2ec2f51100c90406e', tran.payment_url)
 
+    def test_refunds(self):
+        self.client._request_xml = MagicMock(return_value=REFUNDS_RESPONSE)
+        refunds_response = self.client.refunds(sender={
+            'holder': 'Max Samplemerchant',
+            'iban': 'DE71700111109999999999',
+            'bic': 'DEKTDE7GXXX'
+        }, refunds=[{
+            'transaction': '00000-00000-00000000-0000',
+            'amount': '1.11',
+            'comment': 'Order cancelled by user.',
+            'reason_1': 'OrderID 123456',
+            'reason_2': 'Refund'
+        }])
+        self.assertEqual('Max Samplemerchant', refunds_response.sender.holder)
+        self.assertEqual('00000-00000-00000000-0000', refunds_response.refund.transaction)
+        self.assertEqual('accepted', refunds_response.refund.status)
+
     def test_details_multiple_transaction_ids(self):
         self.client._request_xml = MagicMock(return_value=TRANSACTION_LIST_BY_IDS_RESPONSE)
         tran_id = [
@@ -477,6 +494,35 @@ TRANSACTION_LIST_BY_SEARCH_PARAMS = u"""<?xml version="1.0" encoding="UTF-8" ?>
         </status_history_items>
     </transaction_details>
 </transactions>
+"""
+
+REFUNDS_RESPONSE = u"""<?xml version="1.0" encoding="UTF-8" ?>
+<refunds version="3">
+      <sender>
+            <holder>Max Samplemerchant</holder>
+            <bank_name>Demo Bank</bank_name>
+            <iban>DE71700111109999999999</iban>
+            <bic>DEKTDE7GXXX</bic>
+      </sender>
+      <title>Test Refund December 5, 2013</title>
+      <pain>[Base-64 encoded content for PAIN-file]</pain>
+      <refund>
+            <recipient>
+                  <holder>Max Mustermann</holder>
+                  <bank_name>Demo Bank</bank_name>
+                  <iban>DE06000000000023456789</iban>
+                  <bic>SFRTDE20XXX</bic> 
+            </recipient>
+            <transaction>00000-00000-00000000-0000</transaction>
+            <amount>1.11</amount>
+            <comment>Order cancelled by user.</comment>
+            <reason_1>OrderID 123456</reason_1>
+            <reason_2>Refund</reason_2>
+            <time>2013-12-05T16:31:59+01:00</time>
+            <partial_refund_id>fb1244caad</partial_refund_id>
+            <status>accepted</status>
+      </refund>
+</refunds>
 """
 
 NEST_ERRORS = """<?xml version="1.0" encoding="UTF-8" ?>

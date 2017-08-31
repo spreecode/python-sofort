@@ -145,7 +145,7 @@ def transaction_list(transactions, strict=False):
 
 
 def error_handler(data, strict=False):
-    root = RootErrorsModel(data, strict)
+    root = RootErrorsModel(data, strict=strict)
     errors = [RequestError(**error_item) for error_item in root.error]
     if root.su:
         errors.extend([RequestError(**error_item)
