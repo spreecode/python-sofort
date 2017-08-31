@@ -14,7 +14,7 @@ from sofort.internals import as_list
 def response(xmlstr):
     result = xmltodict.parse(xmlstr)
     # only one root element is allowed in XML
-    for root, value in result.iteritems():
+    for root, value in result.items():
         if value is None:
             return None
         factory = factories[root]
