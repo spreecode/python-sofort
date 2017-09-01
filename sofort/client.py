@@ -71,6 +71,13 @@ class Client(object):
 
         return self._request(sofort.xml.multipay(params), params)
 
+    def refunds(self, sender, refunds):
+        request_body = sofort.xml.refunds_by_params({
+            'sender': sender,
+            'refunds': refunds
+        })
+        return self._request(request_body)
+
     def details(self, transaction_ids):
         request_body = sofort.xml.transaction_request_by_params({
             'transaction': as_list(transaction_ids)

@@ -68,6 +68,27 @@ def transaction_request_by_params(params):
     return etree.tostring(root)
 
 
+def refunds_by_params(params):
+    root = etree.Element('refunds')
+    root.set('version', '3')
+    
+    sender = params.pop('sender')
+    sender_xml = etree.SubElement(root, 'sender')
+    for name, value in sender.items():
+        etree.SubElement(sender_xml, name).text = __serialize(value)
+
+    refunds = params.pop('refunds')
+    for refund in refunds:    
+        refund_xml = etree.SubElement(root, 'refund')
+        for name, value in refund.items():
+            etree.SubElement(refund_xml, name).text = __serialize(value)
+
+    for name, value in params.items():
+        etree.SubElement(root, name).text = __serialize(value)
+
+    return etree.tostring(root)
+
+
 def __compact_notification_addresses(addresses_):
     """
     Input::

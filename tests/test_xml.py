@@ -62,6 +62,28 @@ class TestSofortXML(XmlTest):
             sofort.xml.transaction_request_by_params(params)
         )
 
+    def test_refunds_by_params(self):
+        from collections import OrderedDict
+        params = {
+            'sender': {
+                'holder': 'Max Samplemerchant',
+                'iban': 'DE71700111109999999999',
+                'bic': 'DEKTDE7GXXX'
+            }, 
+            'refunds': [{
+                'transaction': '00000-00000-00000000-0000',
+                'amount': '1.11',
+                'comment': 'Order cancelled by user.',
+                'reason_1': 'OrderID 123456',
+                'reason_2': 'Refund'
+            }]
+        }
+
+        self.assertXmlEqual(
+            REFUNDS_SAMPLE,
+            sofort.xml.refunds_by_params(params)
+        )
+
 
 MULTIPAY_SAMPLE = """
 <multipay>
@@ -95,4 +117,21 @@ TRANS_BY_FILTER_SAMPLE = """
     <to_time>2007-12-07T16:29:43.079043</to_time>
     <number>10</number>
 </transaction_request>
+"""
+
+REFUNDS_SAMPLE = """
+<refunds version="3">
+      <sender>
+            <iban>DE71700111109999999999</iban>
+            <holder>Max Samplemerchant</holder>
+            <bic>DEKTDE7GXXX</bic>
+      </sender>
+      <refund>
+            <comment>Order cancelled by user.</comment>
+            <reason_1>OrderID 123456</reason_1>
+            <amount>1.11</amount>
+            <transaction>00000-00000-00000000-0000</transaction>
+            <reason_2>Refund</reason_2>
+      </refund>
+</refunds>
 """

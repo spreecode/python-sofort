@@ -18,7 +18,7 @@ def response(xmlstr):
         if value is None:
             return None
         factory = factories[root]
-        return factory(value)
+        return factory(value, strict=False)
 
 
 class ForcedListType(ListType):
@@ -119,14 +119,33 @@ class TransactionDetailsModel(Model):
                                           ModelType(StatusHistoryItemModel))
 
 
-def transaction_list(transactions):
-    return [TransactionDetailsModel(transact)
+class RefundModel(Model):
+    recipient = ModelType(BankAccountModel)
+    transaction = StringType()
+    amount = DecimalType()
+    comment = StringType()
+    reason_1 = StringType()
+    reason_2 = StringType()
+    time = Iso8601DateTimeType()
+    partial_refund_id = StringType()
+    status = StringType()
+    errors = SofortListType('error', ModelType(ErrorModel))
+
+class RefundsModel(Model):
+    sender = ModelType(BankAccountModel)
+    title = StringType()
+    pain = StringType()
+    refund = ModelType(RefundModel)
+
+
+def transaction_list(transactions, strict=False):
+    return [TransactionDetailsModel(transact, strict=strict)
                 for transact
                 in as_list(transactions['transaction_details'])]
 
 
-def error_handler(data):
-    root = RootErrorsModel(data)
+def error_handler(data, strict=False):
+    root = RootErrorsModel(data, strict=strict)
     errors = [RequestError(**error_item) for error_item in root.error]
     if root.su:
         errors.extend([RequestError(**error_item)
@@ -139,4 +158,5 @@ factories = {
     'errors': error_handler,
     'transactions': transaction_list,
     'new_transaction': NewTransactionModel,
+    'refunds': RefundsModel,
 }
